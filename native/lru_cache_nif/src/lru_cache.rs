@@ -1,6 +1,5 @@
 use crate::supported_term::SupportedTerm;
 
-
 pub struct LruCache {
     cache: lru::LruCache<SupportedTerm, SupportedTerm>,
 }
@@ -12,21 +11,17 @@ impl LruCache {
         }
     }
 
+    // return removed key-value
     pub fn put(&mut self, k: SupportedTerm, v: SupportedTerm)
                -> Option<(SupportedTerm, SupportedTerm)> {
-        if self.cache.contains(&k) {
+        if self.cache.len() < self.cache.cap() || self.cache.contains(&k) {
             self.cache.put(k, v);
             return None;
         }
 
-        if self.cache.len() == self.cache.cap() {
-            let removed = self.cache.pop_lru();
-            self.cache.put(k, v);
-            return removed;
-        }
-
+        let removed = self.cache.pop_lru();
         self.cache.put(k, v);
-        return None;
+        return removed;
     }
 
     pub fn get(&mut self, k: &SupportedTerm) -> Option<&SupportedTerm> {

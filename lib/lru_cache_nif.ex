@@ -1,6 +1,7 @@
 defmodule LruCacheNif do
     @moduledoc """
     Documentation for `LruCacheNif`.
+    An LRU Cache implemented in native using Rustler
     """
 
     use Rustler, otp_app: :lru_cache_nif, crate: :lru_cache_nif
