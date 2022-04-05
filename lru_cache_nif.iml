@@ -21,6 +21,9 @@
       <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/toml" />
       <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/jason" />
       <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/rustler" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/toml" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/jason" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/rustler" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="rustler" level="project" />

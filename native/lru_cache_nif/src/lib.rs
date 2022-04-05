@@ -20,16 +20,10 @@ mod atoms {
         // bad_reference,
         lock_fail,
 
-        // Success Atoms
-        // added,
-        // duplicate,
-        // removed,
-
         // Error Atoms
-        unsupported_type,
+        empty,
         not_found,
-        // index_out_of_bounds,
-        // max_bucket_size_exceeded,
+        unsupported_type,
     }
 }
 
@@ -49,6 +43,46 @@ fn new(capacity: usize) -> (Atom, LruCacheArc) {
         LruCacheResource(Mutex::new(LruCache::new(capacity))));
 
     (atoms::ok(), resource)
+}
+
+#[rustler::nif]
+fn from_keys(capacity: usize, key_vec: Vec<Term>, value: Term) -> Result<LruCacheArc, Atom> {
+    let value = match SupportedTerm::from(&value) {
+        Some(term) => term,
+        _ => return Err(atoms::unsupported_type())
+    };
+
+    let mut lru_cache = LruCache::new(capacity);
+
+    for key in key_vec {
+        let key = match SupportedTerm::from(&key) {
+            Some(term) => term,
+            _ => return Err(atoms::unsupported_type())
+        };
+        lru_cache.put(key, value.clone());
+    }
+
+    Ok(ResourceArc::new(LruCacheResource(Mutex::new(lru_cache))))
+}
+
+
+#[rustler::nif]
+fn from_list(capacity: usize, kv_list: Vec<(Term, Term)>) -> Result<LruCacheArc, Atom> {
+    let mut lru_cache = LruCache::new(capacity);
+
+    for (key, value) in kv_list {
+        let key = match SupportedTerm::from(&key) {
+            Some(term) => term,
+            _ => return Err(atoms::unsupported_type())
+        };
+        let value = match SupportedTerm::from(&value) {
+            Some(term) => term,
+            _ => return Err(atoms::unsupported_type())
+        };
+        lru_cache.put(key, value);
+    }
+
+    Ok(ResourceArc::new(LruCacheResource(Mutex::new(lru_cache))))
 }
 
 #[rustler::nif]
@@ -119,7 +153,7 @@ fn peek_lru(resource: ResourceArc<LruCacheResource>)
     };
 
     match lru_cache.peek_lru() {
-        None => Err(atoms::not_found()),
+        None => Err(atoms::empty()),
         Some((k, v)) => Ok((k.clone(), v.clone()))
     }
 }
@@ -170,7 +204,7 @@ fn pop_lru(resource: ResourceArc<LruCacheResource>)
     };
 
     match lru_cache.pop_lru() {
-        None => Err(atoms::not_found()),
+        None => Err(atoms::empty()),
         Some(kv) => Ok(kv)
     }
 }
@@ -210,15 +244,26 @@ fn cap(resource: ResourceArc<LruCacheResource>)
 }
 
 #[rustler::nif]
-fn clear(resource: ResourceArc<LruCacheResource>)
-       -> Result<Atom, Atom> {
+fn resize(resource: ResourceArc<LruCacheResource>, capacity: usize)
+          -> Result<Vec<(SupportedTerm, SupportedTerm)>, Atom> {
     let mut lru_cache = match resource.0.try_lock() {
         Err(_) => return Err(atoms::lock_fail()),
         Ok(guard) => guard,
     };
 
+    Ok(lru_cache.resize(capacity))
+}
+
+#[rustler::nif]
+fn clear(resource: ResourceArc<LruCacheResource>)
+       -> Atom {
+    let mut lru_cache = match resource.0.try_lock() {
+        Err(_) => return atoms::lock_fail(),
+        Ok(guard) => guard,
+    };
+
     lru_cache.clear();
-    Ok(atoms::ok())
+    atoms::ok()
 }
 
 #[rustler::nif]
@@ -254,6 +299,7 @@ fn to_list(resource: ResourceArc<LruCacheResource>)
     Ok(lru_cache.to_vec())
 }
 
-// peek, contains, pop, len, is_empty, cap, resize, clear]);
-rustler::init!("Elixir.LruCacheNif",[new, put, get, peek, peek_lru, contains,
-    pop, pop_lru, len, is_empty, cap, clear, keys, values, to_list], load = load);
+rustler::init!("Elixir.LruCacheNif",[
+    new, from_keys, from_list,
+    put, get, peek, peek_lru, contains, pop, pop_lru,
+    len, is_empty, cap, resize, clear, keys, values, to_list], load = load);
