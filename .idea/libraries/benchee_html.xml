@@ -1,7 +1,23 @@
 <component name="libraryTable">
   <library name="benchee_html" type="mix">
-    <CLASSES />
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/benchee_html/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/benchee_html/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/benchee_html/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/benchee_html/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/benchee_html/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/benchee_html/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/benchee_html/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/benchee_html/ebin" />
+    </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/benchee_html/lib" />
+      <root url="file://$PROJECT_DIR$/deps/benchee_html/priv" />
+      <root url="file://$PROJECT_DIR$/deps/benchee_html/lib" />
+      <root url="file://$PROJECT_DIR$/deps/benchee_html/priv" />
+      <root url="file://$PROJECT_DIR$/deps/benchee_html/lib" />
+      <root url="file://$PROJECT_DIR$/deps/benchee_html/priv" />
+    </SOURCES>
   </library>
 </component>

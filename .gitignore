@@ -27,3 +27,6 @@ lru_cache_nif-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Ignore the output of benchmarking
+/bench/results
